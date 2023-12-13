@@ -45,6 +45,7 @@ def backtrack(record, groups, seen):
         return seen[record]
 
     if '.' in record and not worth_checking_further(record, groups):
+        seen[record] = 0
         return 0
 
     if '?' not in record:
