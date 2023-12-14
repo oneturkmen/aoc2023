@@ -20,20 +20,20 @@ def read_lines():
 
         return grids
 
-def horizontal_mirror(grid):
+def horizontal_mirror(grid, prev_h):
     for i in range(len(grid) - 1):
         start = i
         end = i + 1
-        complete_reflection = True
+        mirror = True
         while start >= 0 and end < len(grid):
             if grid[start] != grid[end]:
-                complete_reflection = False
+                mirror = False
                 break
 
             start -= 1
             end += 1
 
-        if complete_reflection:
+        if mirror and prev_h != i + 1:
             return i + 1
 
     return 0
@@ -44,7 +44,7 @@ def equal_columns(grid, col1, col2):
             return False
     return True
 
-def vertical_mirror(grid):
+def vertical_mirror(grid, prev_v):
     column_sz = len(grid[0])
     for column_i in range(column_sz - 1):
         start = column_i
@@ -59,33 +59,34 @@ def vertical_mirror(grid):
             start -= 1
             end += 1
 
-        if mirror:
+        if mirror and prev_v != column_i + 1:
             return column_i + 1
 
     return 0
 
 def backtrack(grid):
-    lines = horizontal_mirror(grid), vertical_mirror(grid)
+    h, v = horizontal_mirror(grid, -1), vertical_mirror(grid, -1)
 
     for i in range(len(grid)):
         for j in range(len(grid[0])):
             grid[i][j] = '#' if grid[i][j] == '.' else '.'
-            new_lines = horizontal_mirror(grid), vertical_mirror(grid)
+            new_h, new_v = horizontal_mirror(grid, h), vertical_mirror(grid, v)
             grid[i][j] = '#' if grid[i][j] == '.' else '.'
 
-            print(lines, new_lines)
-
-            if new_lines[0] != 0 and lines[0] != new_lines[0]:
-                return new_lines[0] * 100
-            if new_lines[1] != 0 and lines[1] != new_lines[1]:
-                return new_lines[1]
+            if new_h != 0:
+                return new_h * 100
+            if new_v != 0:
+                return new_v 
 
 def solution(grids):
+    part1 = True
     ans = 0
     for grid in grids:
-        #ans += 100 * horizontal_mirror(grid)
-        #ans += vertical_mirror(grid)
-        ans += backtrack(grid)
+        if part1:
+            ans += 100 * horizontal_mirror(grid, -1)
+            ans += vertical_mirror(grid, -1)
+        else:
+            ans += backtrack(grid)
     return ans
 
 grids = read_lines()
